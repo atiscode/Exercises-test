@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <script src="https://unpkg.com/react@16.3.2/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16.3.2/umd/react-dom.production.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"
+      charset="utf-8"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.0.6/css/star-rating.min.css" media="all" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/react-bootstrap-star-rating@3.5.5-alpha.0.3/lib/index.min.js"></script>
+    <!-- optionally if you need to use a theme, then include the theme file as mentioned below -->
+    <link href="path/to/themes/krajee-svg/theme.css" media="all" rel="stylesheet" type="text/css" />
+
+    
+    <style>
+      .main-container{
+        margin-top: 50px;
+      }
+    </style>
+    <script type="text/babel">
+      //Constants and Auxiliar functions
+      const INITIAL_FORM_CONTACTS = { firstname: "", age: 0, email: "" };
+
+      //Components
+      function FrmContact(props) {
+        const { addContact, onChange, currentContact, age } = props;
+
+        return (
+          <div>
+            <div class="panel panel-primary">
+              <div class="panel-heading"><b>CONTACT FORM</b></div>
+              <div class="panel-body">
+                <form onSubmit={addContact} id="form-contacts">
+                  <div class="form-group">
+                    <label for="formGroupExampleInput">FirsName</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="firstname"
+                      name="firstname"
+                      placeholder="Enter FirstName"
+                      onChange={onChange}
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="formGroupExampleInput">Age</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="age"
+                      name="age"
+                      placeholder="Enter Age"
+                      onChange={onChange}
+                      required
+                    />
+                  </div>
+
+                  {age > 14 ? (
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Email address</label>
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="email"
+                        name="email"
+                        aria-describedby="emailHelp"
+                        placeholder="Enter Email"
+                        onChange={onChange}
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <small>
+                        The email will only be shown if the age is greater than
+                        14 .
+                      </small>
+                      <hr />
+                    </div>
+                  )}
+
+                  <input type="submit" value="Save" class="btn btn-primary" />
+                </form>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      function GridContacts(props) {
+        const { contacts } = props;
+
+        return (
+          <div>
+            <div class="panel panel-success">
+              <div class="panel-heading"><b>COLLECTIONS CONTACTS</b></div>
+              <div class="panel-body">
+                <div class="row">
+                  <div class="col-lg-12">
+                    <table class="table table-sm table-dark">
+                      <thead>
+                        <tr>
+                          <th scope="col">FirstName</th>
+                          <th scope="col">Age</th>
+                          <th scope="col">Email</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {contacts.length === 0 ? (
+                          <small>No items have been added yet.</small>
+                        ) : (
+                          contacts.map((item) => {
+                            return (
+                              <tr>
+                                <td>{item.firstname}</td>
+                                <td>{item.age}</td>
+                                <td>{item.email}</td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      //Main
+      class App extends React.Component {
+        constructor(props) {
+          super(props);
+
+          this.state = {
+            contacts: [
+              { firstname: "testing", age: 15, email: "testing@hotmail.com" },
+            ],
+            currentContact: INITIAL_FORM_CONTACTS,
+            firstname: "", age: 0, email: ""
+          };
+        }
+
+        addContact = (event) => {
+          event.preventDefault();
+          const data = {
+            firstname: event.target["firstname"].value,
+            age: event.target["age"].value,
+            email:
+              this.state.currentContact.age > 14
+                ? event.target["email"].value
+                : "* The validation was not correct *",
+          };
+
+          this.setState((state) => {
+            debugger;
+            const element = [...state.contacts, data];
+            return {
+              contacts: element,
+              currentContact: INITIAL_FORM_CONTACTS,
+            };
+          });
+
+          document.getElementById("form-contacts").reset();
+        };
+
+        onChange = (e) => {
+          const { name, value } = e.target;
+
+
+
+          this.setState((state) => {
+            const element = { ...state.currentContact, [name]: value };
+            return {
+              currentContact: element,
+              [name]: value
+            };
+          });
+        };
+
+        render() {
+          return (
+            <div class="container main-container">
+              <div class="row">
+                <div class="col-lg-6">
+                  <FrmContact
+                    addContact={this.addContact}
+                    onChange={this.onChange}
+                    currentContact={this.state.currentContact}
+                    age = {this.state.age}
+                  />
+                </div>
+                <div class="col-lg-6">
+                  <GridContacts contacts={this.state.contacts} />
+                </div>
+              </div>
+            </div>
+          );
+        }
+      }
+
+      const rootElement = document.getElementById("root");
+      ReactDOM.render(<App />, rootElement);
+    </script>
+    <div id="root"></div>
+  </body>
+</html>

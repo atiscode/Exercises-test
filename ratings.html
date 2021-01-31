@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <script src="https://unpkg.com/react@16.3.2/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16.3.2/umd/react-dom.production.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"
+      charset="utf-8"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+    <style>
+      .rating {
+        font-size: 50px;
+        color: yellow;
+      }
+
+      .main-container{
+        margin-top: 50px;
+      }
+    </style>
+    <script type="text/babel">
+      //Constants and Auxiliar functions
+      const INITIAL_STARTS = 5;
+
+      //Components
+      function Rating(props) {
+        const {
+          stars,
+          rating,
+          hovered,
+          deselectedIcon,
+          selectedIcon,
+          changeRating,
+          hoverRating,
+        } = props;
+        return (
+          <div>
+            <div class="panel panel-info">
+              <div class="panel-heading"><b><h1>Rating</h1></b></div>
+              <div class="panel-body" >
+                <div id="rating" className="rating">
+                  {stars.map((star) => {
+                    return (
+                      <span
+                        class={
+                          rating < star
+                            ? hovered < star
+                              ? ""
+                              : "active"
+                            : "active"
+                        }
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          changeRating(star);
+                        }}
+                        onMouseEnter={() => {
+                          hoverRating(star);
+                        }}
+                        onMouseLeave={() => {
+                          hoverRating(0);
+                        }}
+                      >
+                        {rating < star
+                          ? hovered < star
+                            ? deselectedIcon
+                            : selectedIcon
+                          : selectedIcon}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      //Main
+      class App extends React.Component {
+        constructor(props) {
+          super(props);
+
+          this.state = {
+            stars: [],
+            rating: 0,
+            hovered: 0,
+            selectedIcon: "★",
+            deselectedIcon: "☆",
+          };
+          let outOf = props.outOf ? props.outOf : INITIAL_STARTS;
+
+          //Fill with initial parametrization
+          for (var i = 0; i < outOf; i++) {
+            this.state.stars.push(i + 1);
+          }
+        }
+
+        //When change
+        changeRating = (newRating) => {
+          this.setState((state) => {
+            return {
+              rating: newRating,
+            };
+          });
+
+          if (this.props.onChange) this.props.onChange(newRating);
+        };
+
+        //when hover event
+        hoverRating = (rating) => {
+          this.setState({
+            hovered: rating,
+          });
+        };
+
+        render() {
+          return (
+            <div class="container main-container">
+              <div class="row">
+                <div class="col-lg-12">
+                  <Rating
+                    hoverRating={this.hoverRating}
+                    changeRating={this.changeRating}
+                    stars={this.state.stars}
+                    rating={this.state.rating}
+                    hovered={this.state.hovered}
+                    deselectedIcon={this.state.deselectedIcon}
+                    selectedIcon={this.state.selectedIcon}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        }
+      }
+
+      const rootElement = document.getElementById("root");
+      ReactDOM.render(<App />, rootElement);
+    </script>
+    <div id="root"></div>
+  </body>
+</html>
