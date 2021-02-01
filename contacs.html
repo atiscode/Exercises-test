@@ -64,7 +64,7 @@
                     />
                   </div>
 
-                  {age > 14 ? (
+                  {age >= 14 ? (
                     <div class="form-group">
                       <label for="exampleInputEmail1">Email address</label>
                       <input
@@ -156,7 +156,7 @@
             firstname: event.target["firstname"].value,
             age: event.target["age"].value,
             email:
-              this.state.currentContact.age > 14
+              this.state.currentContact.age >= 14
                 ? event.target["email"].value
                 : "* The validation was not correct *",
           };
